@@ -47,7 +47,7 @@ class World:
 
     def update(self, delta: float):
         for bacteria in self.bacteria_list:
-            bacteria.update(delta)
+            bacteria.update(delta, self.bounds)
 
     def __pick_spawn_position(self, margin: int = 40) -> Position:
         left, right, bottom, top = self.bounds
