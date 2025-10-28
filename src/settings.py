@@ -19,6 +19,7 @@ bacteria_specs: dict[str, dict[str, Any]] = {
     "grazer": {
         "name": "Grazer",
         "hp": 120,
+        "size": 30,
         "energy": 110,
         "speed": 80,
         "damage": 20,
@@ -34,6 +35,7 @@ bacteria_specs: dict[str, dict[str, Any]] = {
     "predator": {
         "name": "Predator",
         "hp": 120,
+        "size": 20,
         "energy": 110,
         "speed": 80,
         "damage": 20,
