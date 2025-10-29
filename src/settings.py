@@ -2,6 +2,7 @@ from typing import Any
 from pydantic import BaseModel
 
 FPS = 60
+SYSTEM_CREATOR_ID = "console"
 
 
 class WindowSettings(BaseModel):
@@ -12,14 +13,14 @@ class WindowSettings(BaseModel):
     resizable: bool = False
     update_rate: float = 1 / FPS
     antialiasing: bool = False
-    background_color: tuple[int, int, int, int] = (14, 26, 40, 255)
+    background_color: tuple[int, int, int, int] = (28, 40, 50, 255)
 
 
 bacteria_specs: dict[str, dict[str, Any]] = {
     "grazer": {
         "name": "Grazer",
         "hp": 120,
-        "size": 30,
+        "diameter": 30,
         "energy": 110,
         "speed": 80,
         "damage": 20,
@@ -35,7 +36,7 @@ bacteria_specs: dict[str, dict[str, Any]] = {
     "predator": {
         "name": "Predator",
         "hp": 120,
-        "size": 20,
+        "diameter": 20,
         "energy": 110,
         "speed": 80,
         "damage": 20,

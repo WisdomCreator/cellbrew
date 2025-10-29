@@ -46,7 +46,7 @@ class World:
         energy: Optional[int] = None,
     ) -> Bacteria:
         position = position or self.__pick_spawn_position()
-        bacteria = Bacteria(bacteria_type, "test", position)
+        bacteria = Bacteria(bacteria_type, "Name", "creator_id", position)
         self.bacteria_list.append(bacteria)
         return bacteria
 
