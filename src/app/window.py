@@ -1,6 +1,7 @@
 import arcade
 
 from src.app.game_app import GameApp
+from src.entities import Bacteria
 from src.settings import WindowSettings
 
 window_settings = WindowSettings()
@@ -31,6 +32,9 @@ class GameWindow(arcade.Window):
     def on_draw(self) -> None:
         self.clear()
         self.app.world.bacteria_list.draw()
+        for bacteria in self.app.world.bacteria_list:
+            self.__draw_bacteria_info(bacteria)
+
         messages = self.app.console_messages
         line_spacing = 20
         for i, message in enumerate(reversed(messages)):
@@ -68,3 +72,56 @@ class GameWindow(arcade.Window):
     def on_resize(self, width: int, height: int):
         super().on_resize(width, height)
         self.app.set_bounds(width, height)
+
+    def __draw_bacteria_info(self, bacteria: Bacteria):
+        x = bacteria.center_x
+        energy_bar_y = bacteria.center_y + bacteria.diameter / 2 + 8
+        energy_ratio = bacteria.energy / bacteria.max_energy
+        bar_width = 36
+        bar_height = 6
+        bar_gap = 2
+        outline_size = 1
+        arcade.draw_rect_filled(
+            arcade.LBWH(
+                x - bar_width / 2, energy_bar_y - bar_height / 2, bar_width, bar_height
+            ),
+            (20, 20, 20, 160),
+        )  # energy_bar background
+        arcade.draw_rect_filled(
+            arcade.LBWH(
+                x - (bar_width - outline_size * 2) / 2,
+                energy_bar_y - (bar_height - outline_size * 2) / 2,
+                bar_width * energy_ratio - outline_size * 2,
+                bar_height - outline_size * 2,
+            ),
+            (70, 160, 255, 200),
+        )  # energy_bar
+        health_ratio = bacteria.hp / bacteria.max_hp
+        health_bar_y = energy_bar_y + bar_height + bar_gap
+        arcade.draw_rect_filled(
+            arcade.LBWH(
+                x - bar_width / 2, health_bar_y - bar_height / 2, bar_width, bar_height
+            ),
+            (20, 20, 20, 160),
+        )
+        arcade.draw_rect_filled(
+            arcade.LBWH(
+                x - (bar_width - outline_size * 2) / 2,
+                health_bar_y - (bar_height - outline_size * 2) / 2,
+                bar_width * health_ratio - outline_size * 2,
+                bar_height - outline_size * 2,
+            ),
+            (50, 220, 60, 200),
+        )  # health_bar
+
+        name_y = health_bar_y + bar_height + bar_gap
+        # TODO: fix performance warning
+        arcade.draw_text(
+            bacteria.name,
+            x,
+            name_y,
+            (235, 240, 255, 255),
+            10,
+            anchor_x="center",
+            anchor_y="bottom",
+        )

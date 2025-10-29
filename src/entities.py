@@ -12,7 +12,7 @@ Position = tuple[float, float]
 
 BACTERIA_TEXTURE_CACHE = {
     bacteria_type: arcade.make_soft_circle_texture(
-        spec["size"], spec["color"], outer_alpha=150
+        spec["diameter"], spec["color"], outer_alpha=150
     )
     for bacteria_type, spec in bacteria_specs.items()
 }
@@ -41,14 +41,17 @@ class Bacteria(arcade.Sprite):
         self,
         bacteria_type: str,
         name: str,
+        creator_id: str,
         position: Position,
     ):
         self.name = name
+        self.creator_id = creator_id
         self.type_name = bacteria_specs[bacteria_type]["name"]
         self.max_hp = bacteria_specs[bacteria_type]["hp"]
         self.hp = self.max_hp
-        self.bacteria_size = bacteria_specs[bacteria_type]["size"]
-        self.energy = bacteria_specs[bacteria_type]["energy"]
+        self.diameter = bacteria_specs[bacteria_type]["diameter"]
+        self.max_energy = bacteria_specs[bacteria_type]["energy"]
+        self.energy = self.max_energy
         self.speed = bacteria_specs[bacteria_type]["speed"]
         self.damage = bacteria_specs[bacteria_type]["damage"]
         self.attack_cooldown = bacteria_specs[bacteria_type]["attack_cooldown"]
@@ -89,10 +92,10 @@ class Bacteria(arcade.Sprite):
 
     def compute_inner_bounds(self, bounds: "Bounds") -> "Bounds":
         left, right, bottom, top = bounds
-        left += self.bacteria_size / 2
-        right -= self.bacteria_size / 2
-        bottom += self.bacteria_size / 2
-        top -= self.bacteria_size / 2
+        left += self.diameter / 2
+        right -= self.diameter / 2
+        bottom += self.diameter / 2
+        top -= self.diameter / 2
         return (left, right, bottom, top)
 
     def __reset_wander_direction(self):
