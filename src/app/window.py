@@ -34,6 +34,7 @@ class GameWindow(arcade.Window):
         messages = self.app.console_messages
         line_spacing = 20
         for i, message in enumerate(reversed(messages)):
+            # TODO: fix performance warning
             arcade.draw_text(message, 16, 80 + line_spacing * i, arcade.color.WHITE, 12)
 
         if self.command_mode:
@@ -63,3 +64,7 @@ class GameWindow(arcade.Window):
     def on_text(self, text: str):
         if self.command_mode and text.isprintable():
             self.command_buffer += text
+
+    def on_resize(self, width: int, height: int):
+        super().on_resize(width, height)
+        self.app.set_bounds(width, height)
