@@ -1,3 +1,6 @@
+# Cellbrew
+Cellbrew is a game where bacteria evolve and compete for survival. You can interact with the game by sending commands through the Redis messaging system.
+
 ## License
 
 Copyright (c) 2025 WisdomCreator
