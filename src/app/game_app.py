@@ -1,6 +1,11 @@
+from collections import deque
+
 from src.world import World, WorldConfig
 from src.command_bus import CommandBus
-from collections import deque
+from src.integration.redis_bridge import RedisBridge
+from src.settings import RedisSettings
+
+redis_settings = RedisSettings()
 
 
 class GameApp:
@@ -11,9 +16,18 @@ class GameApp:
         self.paused = False
         self.command_bus = CommandBus(self)
         self.console_messages: deque[str] = deque(maxlen=10)
+        self.redis_bridge = RedisBridge(
+            redis_settings.host,
+            redis_settings.port,
+            redis_settings.db,
+            redis_settings.events_channel,
+            redis_settings.responses_chanel,
+            self.execute_command,
+        )
+        self.redis_bridge.start()
 
-    def execute_command(self, command: str) -> str | None:
-        response = self.command_bus.execute(command)
+    def execute_command(self, command: str, source: str, username: str) -> str | None:
+        response = self.command_bus.execute(command, source, username)
         if response:
             self.console_messages.append(response)
         return response
@@ -23,6 +37,7 @@ class GameApp:
         self.world.set_bounds(self.bounds)
 
     def update(self, delta: float):
+        self.redis_bridge.poll()
         if self.paused:
             return
 

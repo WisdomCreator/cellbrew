@@ -10,7 +10,7 @@ class CommandBus:
         self.app = app
         self.handlers: dict[str, Callable[[list[str]], str]] = {"spawn": self.__spawn}
 
-    def execute(self, command: str) -> str | None:
+    def execute(self, command: str, source: str, username: str) -> str | None:
         command = command.strip()
         if not command:
             return None
