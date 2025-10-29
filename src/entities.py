@@ -79,17 +79,21 @@ class Bacteria(arcade.Sprite):
         heading = math.radians(self.velocity_angle)
         new_x = self.center_x + self.speed * delta * math.cos(heading)
         new_y = self.center_y + self.speed * delta * math.sin(heading)
-        left, right, bottom, top = bounds
-        left += self.bacteria_size / 2
-        right -= self.bacteria_size / 2
-        bottom += self.bacteria_size / 2
-        top -= self.bacteria_size / 2
-        if (left <= new_x <= right) and (bottom <= new_y <= top):
+        left, right, bottom, top = self.compute_inner_bounds(bounds)
+        if (left < new_x < right) and (bottom < new_y < top):
             self.center_x = new_x
             self.center_y = new_y
             return
         self.__reset_wander_direction()
         self.move_forward(delta, bounds)
+
+    def compute_inner_bounds(self, bounds: "Bounds") -> "Bounds":
+        left, right, bottom, top = bounds
+        left += self.bacteria_size / 2
+        right -= self.bacteria_size / 2
+        bottom += self.bacteria_size / 2
+        top -= self.bacteria_size / 2
+        return (left, right, bottom, top)
 
     def __reset_wander_direction(self):
         self.velocity_angle = random.uniform(0, 360)

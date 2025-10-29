@@ -1,5 +1,6 @@
 import random
 from arcade import SpriteList
+from arcade.math import clamp
 from dataclasses import dataclass
 from typing import Iterable, Optional
 from src.entities import Bacteria, Position
@@ -24,6 +25,10 @@ class World:
 
     def set_bounds(self, bounds: Bounds):
         self.bounds = bounds
+        for bacteria in self.bacteria_list:
+            left, right, bottom, top = bacteria.compute_inner_bounds(bounds)
+            bacteria.center_x = clamp(bacteria.center_x, left, right)
+            bacteria.center_y = clamp(bacteria.center_y, bottom, top)
 
     def apply_config(self, config: WorldConfig):
         self.config = config
