@@ -1,8 +1,10 @@
 import random
-from arcade import SpriteList
-from arcade.math import clamp
 from dataclasses import dataclass
 from typing import Iterable, Optional
+
+from arcade import SpriteList
+from arcade.math import clamp
+
 from src.entities import Bacteria, Position
 
 Bounds = tuple[int, int, int, int]
@@ -42,11 +44,12 @@ class World:
     def spawn_bacteria(
         self,
         bacteria_type: str,
+        name: str,
         position: Optional[Position] = None,
         energy: Optional[int] = None,
     ) -> Bacteria:
         position = position or self.__pick_spawn_position()
-        bacteria = Bacteria(bacteria_type, "Name", "creator_id", position)
+        bacteria = Bacteria(bacteria_type, name, "creator_id", position)
         self.bacteria_list.append(bacteria)
         return bacteria
 

@@ -1,4 +1,5 @@
-from typing import Callable, TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable
+
 from src.settings import bacteria_specs
 
 if TYPE_CHECKING:
@@ -23,9 +24,11 @@ class CommandBus:
 
     # Handlers
     def __spawn(self, args: list[str]) -> str:
-        # TODO: Добавить проверку аргументов
         bacteria_type = args[0].lower()
+        name = "Console"
+        if len(args) == 2:
+            name = args[1]
         if bacteria_type in bacteria_specs:
-            self.app.spawn_bacteria(bacteria_type)
+            self.app.spawn_bacteria(bacteria_type, name)
             return "Bacteria spawned: " + bacteria_type
         return "Unknown bacteria type: " + bacteria_type

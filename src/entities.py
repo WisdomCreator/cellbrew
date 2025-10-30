@@ -1,8 +1,10 @@
 import math
 import random
-import arcade
-from typing import Optional, TYPE_CHECKING
 from dataclasses import dataclass
+from typing import TYPE_CHECKING, Optional
+
+import arcade
+
 from src.settings import bacteria_specs
 
 if TYPE_CHECKING:
@@ -40,23 +42,23 @@ class Bacteria(arcade.Sprite):
     def __init__(
         self,
         bacteria_type: str,
-        name: str,
+        name: str | None,
         creator_id: str,
         position: Position,
     ):
         self.name = name
         self.creator_id = creator_id
         self.type_name = bacteria_specs[bacteria_type]["name"]
-        self.max_hp = bacteria_specs[bacteria_type]["hp"]
+        self.max_hp = bacteria_specs[bacteria_type]["max_hp"]
         self.hp = self.max_hp
-        self.diameter = bacteria_specs[bacteria_type]["diameter"]
-        self.max_energy = bacteria_specs[bacteria_type]["energy"]
+        self.max_energy = bacteria_specs[bacteria_type]["max_energy"]
         self.energy = self.max_energy
+        self.diameter = bacteria_specs[bacteria_type]["diameter"]
         self.speed = bacteria_specs[bacteria_type]["speed"]
         self.damage = bacteria_specs[bacteria_type]["damage"]
         self.attack_cooldown = bacteria_specs[bacteria_type]["attack_cooldown"]
         self.defense = bacteria_specs[bacteria_type]["defense"]
-        self.metabolism = bacteria_specs[bacteria_type]["metabolism"]
+        self.metabolism: float = bacteria_specs[bacteria_type]["metabolism"]
         self.vision = bacteria_specs[bacteria_type]["vision"]
         self.reproduction = bacteria_specs[bacteria_type]["reproduction"]
         self.aggression = bacteria_specs[bacteria_type]["aggression"]
@@ -73,6 +75,10 @@ class Bacteria(arcade.Sprite):
         self.target_resource: Optional[Resource] = None
 
     def update(self, delta: float, bounds: "Bounds"):
+        self.energy -= self.metabolism * delta
+        if self.hp <= 0 or self.energy <= 0:
+            self.die()
+            return
         self.wander_timer -= delta
         if self.wander_timer <= 0:
             self.__reset_wander_direction()
@@ -90,6 +96,18 @@ class Bacteria(arcade.Sprite):
         self.__reset_wander_direction()
         self.move_forward(delta, bounds)
 
+    def move_towards(self, point: Position, delta: float):
+        dx = point[0] - self.center_x
+        dy = point[1] - self.center_y
+        distance = math.hypot(dx, dy)
+        heading = math.atan2(dy, dx)
+        self.velocity_angle = math.degrees(heading)
+        step = self.speed * delta
+        if step > distance:
+            step = distance
+        self.center_x += step * math.cos(heading)
+        self.center_y += step * math.sin(heading)
+
     def compute_inner_bounds(self, bounds: "Bounds") -> "Bounds":
         left, right, bottom, top = bounds
         left += self.diameter / 2
@@ -97,6 +115,11 @@ class Bacteria(arcade.Sprite):
         bottom += self.diameter / 2
         top -= self.diameter / 2
         return (left, right, bottom, top)
+
+    def die(self):
+        self.target_point = None
+        self.target_resource = None
+        self.kill()
 
     def __reset_wander_direction(self):
         self.velocity_angle = random.uniform(0, 360)

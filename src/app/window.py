@@ -2,7 +2,7 @@ import arcade
 
 from src.app.game_app import GameApp
 from src.entities import Bacteria
-from src.settings import WindowSettings, SYSTEM_USERNAME
+from src.settings import SYSTEM_USERNAME, WindowSettings
 
 window_settings = WindowSettings()
 
@@ -18,7 +18,8 @@ class GameWindow(arcade.Window):
             window_settings.update_rate,
             window_settings.antialiasing,
         )
-        arcade.set_background_color(window_settings.background_color)
+        # arcade.set_background_color(window_settings.background_color)
+        self.background = arcade.load_texture("assets/images/background/1.png")
         self.app = app
         self.app.set_bounds(window_settings.window_width, window_settings.window_height)
         self.command_mode = False
@@ -31,6 +32,9 @@ class GameWindow(arcade.Window):
 
     def on_draw(self) -> None:
         self.clear()
+        arcade.draw_texture_rect(
+            self.background, arcade.LBWH(0, 0, self.width, self.height)
+        )
         self.app.world.bacteria_list.draw()
         for bacteria in self.app.world.bacteria_list:
             self.__draw_bacteria_info(bacteria)
@@ -79,8 +83,8 @@ class GameWindow(arcade.Window):
         x = bacteria.center_x
         energy_bar_y = bacteria.center_y + bacteria.diameter / 2 + 8
         energy_ratio = bacteria.energy / bacteria.max_energy
-        bar_width = 36
-        bar_height = 6
+        bar_width = 60
+        bar_height = 8
         bar_gap = 2
         outline_size = 1
         arcade.draw_rect_filled(
@@ -116,14 +120,14 @@ class GameWindow(arcade.Window):
             (50, 220, 60, 200),
         )  # health_bar
 
-        name_y = health_bar_y + bar_height + bar_gap
+        name_y = health_bar_y + bar_gap * 2
         # TODO: fix performance warning
         arcade.draw_text(
             bacteria.name,
             x,
             name_y,
             (235, 240, 255, 255),
-            10,
+            12,
             anchor_x="center",
             anchor_y="bottom",
         )

@@ -1,9 +1,9 @@
 from collections import deque
 
-from src.world import World, WorldConfig
 from src.command_bus import CommandBus
 from src.integration.redis_bridge import RedisBridge
 from src.settings import RedisSettings
+from src.world import World, WorldConfig
 
 redis_settings = RedisSettings()
 
@@ -43,5 +43,5 @@ class GameApp:
 
         self.world.update(delta)
 
-    def spawn_bacteria(self, bacteria_type: str):
-        self.world.spawn_bacteria(bacteria_type)
+    def spawn_bacteria(self, bacteria_type: str, name: str):
+        self.world.spawn_bacteria(bacteria_type, name)
