@@ -2,7 +2,7 @@ from typing import Any
 from pydantic import BaseModel
 
 FPS = 60
-SYSTEM_CREATOR_ID = "console"
+SYSTEM_USERNAME = "console"
 
 
 class WindowSettings(BaseModel):
@@ -14,6 +14,14 @@ class WindowSettings(BaseModel):
     update_rate: float = 1 / FPS
     antialiasing: bool = False
     background_color: tuple[int, int, int, int] = (28, 40, 50, 255)
+
+
+class RedisSettings(BaseModel):
+    host: str = "localhost"
+    port: int = 6379
+    db: int = 0
+    events_channel: str = "cellbrew_events"
+    responses_chanel: str = "cellbrew_responses"
 
 
 bacteria_specs: dict[str, dict[str, Any]] = {

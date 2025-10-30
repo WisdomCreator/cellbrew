@@ -2,7 +2,7 @@ import arcade
 
 from src.app.game_app import GameApp
 from src.entities import Bacteria
-from src.settings import WindowSettings
+from src.settings import WindowSettings, SYSTEM_USERNAME
 
 window_settings = WindowSettings()
 
@@ -52,7 +52,9 @@ class GameWindow(arcade.Window):
                     self.command_mode = False
                     self.command_buffer = ""
                 case arcade.key.ENTER:
-                    response = self.app.execute_command(self.command_buffer)
+                    response = self.app.execute_command(
+                        self.command_buffer, "console", SYSTEM_USERNAME
+                    )
                     if response:
                         print(response)
                     self.command_buffer = ""
