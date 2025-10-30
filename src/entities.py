@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Optional
 
 import arcade
 
-from src.settings import bacteria_specs
+from src.settings import bacteria_specs, resource_specs
 
 if TYPE_CHECKING:
     from src.world import Bounds
@@ -19,6 +19,13 @@ BACTERIA_TEXTURE_CACHE = {
     for bacteria_type, spec in bacteria_specs.items()
 }
 
+RESOURCE_TEXTURE_CACHE = {
+    resource_type: arcade.make_soft_circle_texture(
+        spec["diameter"], spec["color"], outer_alpha=160
+    )
+    for resource_type, spec in resource_specs.items()
+}
+
 
 @dataclass
 class CommandResult:
@@ -26,19 +33,36 @@ class CommandResult:
     message: str
 
 
-class Resource(arcade.Sprite):
-    def __init__(self, resource_type: str, position: Position, energy: int):
-        self.resource_type = resource_type
-        self.energy = energy
-        self.lifetime = random.uniform(5, 20)
+class Entity(arcade.Sprite):
+    def __init__(self, diameter: int, position: Position, texture: arcade.Texture):
+        self.diameter = diameter
+        super().__init__(texture)
+        self.center_x, self.center_y = position
+
+    def compute_inner_bounds(self, bounds: "Bounds") -> "Bounds":
+        left, right, bottom, top = bounds
+        left += int(self.diameter / 2)
+        right -= int(self.diameter / 2)
+        bottom += int(self.diameter / 2)
+        top -= int(self.diameter / 2)
+        return (left, right, bottom, top)
+
+
+class Resource(Entity):
+    def __init__(self, resource_type: str, position: Position):
+        self.lifetime = random.uniform(*resource_specs[resource_type]["lifetime"])
+
+        diameter = resource_specs[resource_type]["diameter"]
+        texture = RESOURCE_TEXTURE_CACHE[resource_type]
+        super().__init__(diameter, position, texture)
 
     def update(self, delta: float):
         self.lifetime -= delta
         if self.lifetime <= 0:
-            ...
+            self.remove_from_sprite_lists()
 
 
-class Bacteria(arcade.Sprite):
+class Bacteria(Entity):
     def __init__(
         self,
         bacteria_type: str,
@@ -53,7 +77,6 @@ class Bacteria(arcade.Sprite):
         self.hp = self.max_hp
         self.max_energy = bacteria_specs[bacteria_type]["max_energy"]
         self.energy = self.max_energy
-        self.diameter = bacteria_specs[bacteria_type]["diameter"]
         self.speed = bacteria_specs[bacteria_type]["speed"]
         self.damage = bacteria_specs[bacteria_type]["damage"]
         self.attack_cooldown = bacteria_specs[bacteria_type]["attack_cooldown"]
@@ -63,20 +86,24 @@ class Bacteria(arcade.Sprite):
         self.reproduction = bacteria_specs[bacteria_type]["reproduction"]
         self.aggression = bacteria_specs[bacteria_type]["aggression"]
         self.availableResources = bacteria_specs[bacteria_type]["available_resources"]
-        self.color_rgb = bacteria_specs[bacteria_type]["color"]
 
+        diameter = bacteria_specs[bacteria_type]["diameter"]
         texture = BACTERIA_TEXTURE_CACHE[bacteria_type]
-        super().__init__(texture)
-        self.center_x, self.center_y = position
+        super().__init__(diameter, position, texture)
 
         self.velocity_angle = random.uniform(0, 360)
         self.wander_timer = 0.0
         self.target_point: Optional[tuple[float, float]] = None
         self.target_resource: Optional[Resource] = None
 
-    def update(self, delta: float, bounds: "Bounds"):
+    def update(
+        self,
+        delta: float,
+        bounds: "Bounds",
+    ):
         self.energy -= self.metabolism * delta
         if self.hp <= 0 or self.energy <= 0:
+            self.remove_from_sprite_lists()
             self.die()
             return
         self.wander_timer -= delta
@@ -107,14 +134,6 @@ class Bacteria(arcade.Sprite):
             step = distance
         self.center_x += step * math.cos(heading)
         self.center_y += step * math.sin(heading)
-
-    def compute_inner_bounds(self, bounds: "Bounds") -> "Bounds":
-        left, right, bottom, top = bounds
-        left += self.diameter / 2
-        right -= self.diameter / 2
-        bottom += self.diameter / 2
-        top -= self.diameter / 2
-        return (left, right, bottom, top)
 
     def die(self):
         self.target_point = None

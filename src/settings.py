@@ -47,7 +47,7 @@ bacteria_specs: dict[str, dict[str, Any]] = {
         "max_hp": 120,
         "max_energy": 110,
         "diameter": 45,
-        "speed": 80,
+        "speed": 120,
         "damage": 20,
         "attack_cooldown": 1,
         "defense": 30,
@@ -57,5 +57,22 @@ bacteria_specs: dict[str, dict[str, Any]] = {
         "aggression": 0.00,
         "available_resources": ["phytoplasma"],
         "color": (220, 40, 40),
+    },
+}
+
+resource_specs: dict[str, dict[str, Any]] = {
+    "phytoplasma": {
+        "diameter": 10,
+        "color": (120, 255, 150),
+        "energy": 45,
+        "spawn_interval": [0.5, 2.0],
+        "lifetime": [5.0, 10.0],
+    },
+    "biomass": {
+        "diameter": 6,
+        "color": (190, 120, 80),
+        "energy": 70,
+        "spawn_interval": [5.0, 10.0],
+        "lifetime": [7.0, 15.0],
     },
 }

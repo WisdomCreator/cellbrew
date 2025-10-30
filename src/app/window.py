@@ -36,6 +36,7 @@ class GameWindow(arcade.Window):
             self.background, arcade.LBWH(0, 0, self.width, self.height)
         )
         self.app.world.bacteria_list.draw()
+        self.app.world.resource_list.draw()
         for bacteria in self.app.world.bacteria_list:
             self.__draw_bacteria_info(bacteria)
 
