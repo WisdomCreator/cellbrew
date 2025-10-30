@@ -1,8 +1,9 @@
-from typing import Callable, Optional
-import redis
-import threading
-import queue
 import json
+import queue
+import threading
+from typing import Callable, Optional
+
+import redis
 
 
 class RedisBridge:

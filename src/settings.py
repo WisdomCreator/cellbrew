@@ -1,4 +1,5 @@
 from typing import Any
+
 from pydantic import BaseModel
 
 FPS = 60
@@ -27,14 +28,14 @@ class RedisSettings(BaseModel):
 bacteria_specs: dict[str, dict[str, Any]] = {
     "grazer": {
         "name": "Grazer",
-        "hp": 120,
-        "diameter": 30,
-        "energy": 110,
+        "max_hp": 120,
+        "max_energy": 110,
+        "diameter": 60,
         "speed": 80,
         "damage": 20,
         "attack_cooldown": 1,
         "defense": 30,
-        "metabolism": 2,
+        "metabolism": 2.0,
         "vision": 220,
         "reproduction": 100,
         "aggression": 0.00,
@@ -43,14 +44,14 @@ bacteria_specs: dict[str, dict[str, Any]] = {
     },
     "predator": {
         "name": "Predator",
-        "hp": 120,
-        "diameter": 20,
-        "energy": 110,
+        "max_hp": 120,
+        "max_energy": 110,
+        "diameter": 45,
         "speed": 80,
         "damage": 20,
         "attack_cooldown": 1,
         "defense": 30,
-        "metabolism": 2,
+        "metabolism": 10.0,
         "vision": 220,
         "reproduction": 100,
         "aggression": 0.00,
