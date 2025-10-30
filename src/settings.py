@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Any
 
 from pydantic import BaseModel
@@ -23,6 +24,11 @@ class RedisSettings(BaseModel):
     db: int = 0
     events_channel: str = "cellbrew_events"
     responses_chanel: str = "cellbrew_responses"
+
+
+class SoundSettings(BaseModel):
+    music_path: Path = Path("assets/sounds/music")
+    sfx_path: Path = Path("assets/sounds/sfx")
 
 
 bacteria_specs: dict[str, dict[str, Any]] = {

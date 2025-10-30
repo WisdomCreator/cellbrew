@@ -35,8 +35,8 @@ class GameWindow(arcade.Window):
         arcade.draw_texture_rect(
             self.background, arcade.LBWH(0, 0, self.width, self.height)
         )
-        self.app.world.bacteria_list.draw()
         self.app.world.resource_list.draw()
+        self.app.world.bacteria_list.draw()
         for bacteria in self.app.world.bacteria_list:
             self.__draw_bacteria_info(bacteria)
 
@@ -84,8 +84,8 @@ class GameWindow(arcade.Window):
         x = bacteria.center_x
         energy_bar_y = bacteria.center_y + bacteria.diameter / 2 + 8
         energy_ratio = bacteria.energy / bacteria.max_energy
-        bar_width = 60
-        bar_height = 8
+        bar_width = 70
+        bar_height = 10
         bar_gap = 2
         outline_size = 1
         arcade.draw_rect_filled(
@@ -128,7 +128,7 @@ class GameWindow(arcade.Window):
             x,
             name_y,
             (235, 240, 255, 255),
-            12,
+            14,
             anchor_x="center",
             anchor_y="bottom",
         )

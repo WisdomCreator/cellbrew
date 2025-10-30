@@ -3,6 +3,7 @@ from collections import deque
 from src.command_bus import CommandBus
 from src.integration.redis_bridge import RedisBridge
 from src.settings import RedisSettings
+from src.sound_manager import SoundManager
 from src.world import World, WorldConfig
 
 redis_settings = RedisSettings()
@@ -25,6 +26,8 @@ class GameApp:
             self.execute_command,
         )
         self.redis_bridge.start()
+        self.sound_manager = SoundManager()
+        self.sound_manager.play()
 
     def execute_command(self, command: str, source: str, username: str) -> str | None:
         response = self.command_bus.execute(command, source, username)
