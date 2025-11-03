@@ -50,7 +50,9 @@ class Entity(arcade.Sprite):
 
 class Resource(Entity):
     def __init__(self, resource_type: str, position: Position):
+        self.resource_type = resource_type
         self.lifetime = random.uniform(*resource_specs[resource_type]["lifetime"])
+        self.energy = resource_specs[resource_type]["energy"]
 
         diameter = resource_specs[resource_type]["diameter"]
         texture = RESOURCE_TEXTURE_CACHE[resource_type]
@@ -85,7 +87,7 @@ class Bacteria(Entity):
         self.vision = bacteria_specs[bacteria_type]["vision"]
         self.reproduction = bacteria_specs[bacteria_type]["reproduction"]
         self.aggression = bacteria_specs[bacteria_type]["aggression"]
-        self.availableResources = bacteria_specs[bacteria_type]["available_resources"]
+        self.available_resources = bacteria_specs[bacteria_type]["available_resources"]
 
         diameter = bacteria_specs[bacteria_type]["diameter"]
         texture = BACTERIA_TEXTURE_CACHE[bacteria_type]
@@ -101,15 +103,18 @@ class Bacteria(Entity):
         delta: float,
         bounds: "Bounds",
     ):
+        print(self.target_resource)
         self.energy -= self.metabolism * delta
         if self.hp <= 0 or self.energy <= 0:
             self.remove_from_sprite_lists()
-            self.die()
             return
-        self.wander_timer -= delta
-        if self.wander_timer <= 0:
-            self.__reset_wander_direction()
-        self.move_forward(delta, bounds)
+        if self.target_resource:
+            self.move_towards(self.target_resource.position, delta)
+        else:
+            self.wander_timer -= delta
+            if self.wander_timer <= 0:
+                self.__reset_wander_direction()
+            self.move_forward(delta, bounds)
 
     def move_forward(self, delta: float, bounds: "Bounds"):
         heading = math.radians(self.velocity_angle)
@@ -135,10 +140,9 @@ class Bacteria(Entity):
         self.center_x += step * math.cos(heading)
         self.center_y += step * math.sin(heading)
 
-    def die(self):
-        self.target_point = None
-        self.target_resource = None
-        self.kill()
+    def consume_resource(self, resource: Resource):
+        self.energy = min(self.energy + resource.energy, self.max_energy)
+        resource.remove_from_sprite_lists()
 
     def __reset_wander_direction(self):
         self.velocity_angle = random.uniform(0, 360)

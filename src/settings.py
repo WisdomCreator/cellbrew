@@ -15,7 +15,7 @@ class WindowSettings(BaseModel):
     resizable: bool = False
     update_rate: float = 1 / FPS
     antialiasing: bool = False
-    background_color: tuple[int, int, int, int] = (28, 40, 50, 255)
+    # background_color: tuple[int, int, int, int] = (28, 40, 50, 255)
 
 
 class RedisSettings(BaseModel):
@@ -44,8 +44,8 @@ bacteria_specs: dict[str, dict[str, Any]] = {
         "metabolism": 2.0,
         "vision": 220,
         "reproduction": 100,
-        "aggression": 0.00,
-        "available_resources": ["phytoplasma"],
+        "aggression": 0,
+        "available_resources": ["biomass"],
         "color": (60, 200, 120),
     },
     "predator": {
@@ -58,9 +58,9 @@ bacteria_specs: dict[str, dict[str, Any]] = {
         "attack_cooldown": 1,
         "defense": 30,
         "metabolism": 10.0,
-        "vision": 220,
+        "vision": 250,
         "reproduction": 100,
-        "aggression": 0.00,
+        "aggression": 1,
         "available_resources": ["phytoplasma"],
         "color": (220, 40, 40),
     },

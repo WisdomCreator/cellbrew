@@ -3,7 +3,11 @@ import random
 from dataclasses import dataclass
 from typing import Iterable, Optional
 
-from arcade import SpriteList
+from arcade import (
+    SpriteList,
+    check_for_collision_with_list,
+    get_distance_between_sprites,
+)
 from arcade.math import clamp
 
 from src.entities import Bacteria, Position, Resource
@@ -98,8 +102,27 @@ class World:
                 self.spawn_resource(resource_spawn_timer.resource_type)
                 resource_spawn_timer.reset()
 
+        for bacteria in self.bacteria_list:
+            bacteria.target_resource = self.__find_resource_target(bacteria)
         self.resource_list.update(delta)  # type: ignore
         self.bacteria_list.update(delta, self.bounds)  # type: ignore
+        for bacteria in self.bacteria_list:
+            collisions = check_for_collision_with_list(bacteria, self.resource_list)
+            for resource in collisions:
+                if resource.resource_type in bacteria.available_resources:
+                    bacteria.consume_resource(resource)
+
+    def __find_resource_target(self, bacteria: Bacteria) -> Resource | None:
+        resource_target: Resource | None = None
+        min_distance = float("inf")
+        for resource in self.resource_list:
+            if resource.resource_type in bacteria.available_resources:
+                distance = get_distance_between_sprites(bacteria, resource)
+                if distance <= bacteria.vision and distance < min_distance:
+                    min_distance = distance
+                    resource_target = resource
+        print(min_distance)
+        return resource_target
 
     def __pick_spawn_position(self, margin: int = 40) -> Position:
         left, right, bottom, top = self.bounds
