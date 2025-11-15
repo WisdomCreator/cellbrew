@@ -1,6 +1,7 @@
 from collections import deque
 
 from src.command_bus import CommandBus
+from src.event_bus import EventBus
 from src.integration.redis_bridge import RedisBridge
 from src.settings import RedisSettings
 from src.sound_manager import SoundManager
@@ -11,8 +12,9 @@ redis_settings = RedisSettings()
 
 class GameApp:
     def __init__(self) -> None:
+        self.event_bus = EventBus()
         self.world_config = WorldConfig(10000, 10000)
-        self.world = World(self.world_config)
+        self.world = World(self.world_config, self.event_bus)
         self.bounds: tuple[int, int, int, int]
         self.paused = False
         self.command_bus = CommandBus(self)

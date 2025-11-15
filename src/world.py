@@ -11,6 +11,7 @@ from arcade import (
 from arcade.math import clamp
 
 from src.entities import Bacteria, Position, Resource
+from src.event_bus import EventBus
 from src.settings import resource_specs
 
 Bounds = tuple[int, int, int, int]
@@ -44,10 +45,11 @@ class ResourceSpawnTimer:
 
 
 class World:
-    def __init__(self, config: WorldConfig):
+    def __init__(self, config: WorldConfig, event_bus: EventBus):
         self.config = config
         self.rand_gen = random.Random()
         self.bounds: Bounds
+        self.event_bus = event_bus
         self.resource_list: SpriteList[Resource] = SpriteList(
             use_spatial_hash=True, spatial_hash_cell_size=32
         )
@@ -79,7 +81,7 @@ class World:
             oldest = self.resource_list[0]
             oldest.remove_from_sprite_lists()
         position = position or self.__pick_spawn_position(40)
-        resource = Resource(resource_type, position)
+        resource = Resource(resource_type, position, self.event_bus)
         self.resource_list.append(resource)
         return resource
 
@@ -91,7 +93,7 @@ class World:
         energy: Optional[int] = None,
     ) -> Bacteria:
         position = position or self.__pick_spawn_position()
-        bacteria = Bacteria(bacteria_type, name, "creator_id", position)
+        bacteria = Bacteria(bacteria_type, name, "creator_id", position, self.event_bus)
         self.bacteria_list.append(bacteria)
         return bacteria
 
@@ -104,6 +106,7 @@ class World:
 
         for bacteria in self.bacteria_list:
             bacteria.target_resource = self.__find_resource_target(bacteria)
+            bacteria.target_bacteria = self.__find_bacteria_target(bacteria)
         self.resource_list.update(delta)  # type: ignore
         self.bacteria_list.update(delta, self.bounds)  # type: ignore
         for bacteria in self.bacteria_list:
@@ -121,8 +124,24 @@ class World:
                 if distance <= bacteria.vision and distance < min_distance:
                     min_distance = distance
                     resource_target = resource
-        print(min_distance)
+
         return resource_target
+
+    def __find_bacteria_target(self, origin_bacteria: Bacteria) -> Bacteria | None:
+        if origin_bacteria.aggression == 0:
+            return
+        bacteria_target: Bacteria | None = None
+        min_distance = float("inf")
+        for bacteria in self.bacteria_list:
+            distance = get_distance_between_sprites(origin_bacteria, bacteria)
+            if (
+                distance <= bacteria.vision
+                and distance < min_distance
+                and origin_bacteria is not bacteria
+            ):
+                min_distance = distance
+                bacteria_target = bacteria
+        return bacteria_target
 
     def __pick_spawn_position(self, margin: int = 40) -> Position:
         left, right, bottom, top = self.bounds
