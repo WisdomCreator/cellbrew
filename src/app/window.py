@@ -229,3 +229,4 @@ class GameWindow(arcade.Window):
             damage=damage,
         )
         self.attack_indicators.append(indicator)
+        self.app.sound_manager.play_sfx("attack")

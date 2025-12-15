@@ -29,7 +29,7 @@ class GameApp:
         )
         self.redis_bridge.start()
         self.sound_manager = SoundManager()
-        self.sound_manager.play()
+        self.sound_manager.play_music()
 
     def execute_command(self, command: str, source: str, username: str) -> str | None:
         response = self.command_bus.execute(command, source, username)
