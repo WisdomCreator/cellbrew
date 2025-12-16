@@ -177,6 +177,7 @@ class Bacteria(Entity):
     def consume_resource(self, resource: Resource):
         self.energy = min(self.energy + resource.energy, self.max_energy)
         resource.remove_from_sprite_lists()
+        self.event_bus.emit("resource_consume")
 
     def attack_bacteria(self, bacteria: "Bacteria"):
         damage = max(0, self.damage - bacteria.defense)

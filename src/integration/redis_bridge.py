@@ -101,7 +101,7 @@ class RedisBridge:
                 if isinstance(data, bytes):
                     data = data.decode("utf-8")
                 if isinstance(data, str):
-                    self.command_queue.put(data.strip())
+                    self.command_queue.put(data)
         except Exception as e:
             print(f"Error reading from Redis: {e}")
             self.restart()

@@ -57,7 +57,7 @@ class GameWindow(arcade.Window):
             window_settings.update_rate,
             window_settings.antialiasing,
         )
-        # arcade.set_background_color(window_settings.background_color)
+
         self.background = arcade.load_texture("assets/images/background/1.png")
         self.app = app
         self.app.set_bounds(window_settings.window_width, window_settings.window_height)
@@ -102,7 +102,7 @@ class GameWindow(arcade.Window):
                     self.command_buffer = ""
                 case arcade.key.ENTER:
                     response = self.app.execute_command(
-                        self.command_buffer, "console", SYSTEM_USERNAME
+                        self.command_buffer.strip(), "console", SYSTEM_USERNAME
                     )
                     if response:
                         print(response)
@@ -229,4 +229,3 @@ class GameWindow(arcade.Window):
             damage=damage,
         )
         self.attack_indicators.append(indicator)
-        self.app.sound_manager.play_sfx("attack")
